@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func main() {
+func day2() {
     played := map[string]string{
         "A": "rock",
         "B": "paper",
@@ -29,7 +29,7 @@ func main() {
         "Z": 1,
     }
 
-    input, err := os.ReadFile("./input.txt")
+    input, err := os.ReadFile("./inputs/day2.txt")
 
     if err != nil {
         log.Fatal(err)
