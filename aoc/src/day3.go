@@ -1,21 +1,16 @@
-package main
+package src 
 
 import (
-    "fmt"
-    "log"
-    "os"
-    "strings"
+	"fmt"
+	"krtffl/aoc/helpers"
+	"log"
 )
 
-func main() {
-    input, err := os.ReadFile("./inputs/day3.txt")
-
-    if err != nil {
-        log.Fatal(err)
+func Solve_Day_3() {
+    data, error := helpers.ReadInput("day3.txt")
+    if error != nil {
+        log.Fatal(error) 
     }
-
-    stringifiedInput := strings.TrimSpace(string(input))
-    data := strings.Split(stringifiedInput, "\n")
 
     priorities := 0
 
@@ -36,6 +31,7 @@ func main() {
                 }
             }
         }
+
         priorities += get_priority(match)
     }
 
