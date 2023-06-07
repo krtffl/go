@@ -1,81 +1,102 @@
-package src
+package main
 
 import (
+	_ "embed"
+	"flag"
 	"fmt"
-	"krtffl/aoc/helpers"
 	"log"
 	"strconv"
 	"strings"
 )
 
-func Solve_Day_4() {
-    data, error := helpers.ReadInput("day4.txt")
-    if error != nil {
-        log.Fatal(error)
-    }
+//go:embed input.txt
+var input string
 
-    count := 0
-
-    for i:=0; i < len(data); i++ {
-        sections := strings.Split(data[i], ",") 
-
-        left_section := make([]int, 2)
-        right_section := make([]int, 2)
-
-        left_section[0], error = strconv.Atoi(strings.Split(sections[0], "-")[0])
-        if error != nil {
-            log.Fatal(error)
-        }
-
-        left_section[1], error = strconv.Atoi(strings.Split(sections[0], "-")[1])
-        if error != nil {
-            log.Fatal(error)
-        }
-
-        right_section[0], error = strconv.Atoi(strings.Split(sections[1], "-")[0])
-        if error != nil {
-            log.Fatal(error)
-        }
-
-        right_section[1], error = strconv.Atoi(strings.Split(sections[1], "-")[1])
-        if error != nil {
-            log.Fatal(error)
-        }
-
-        if sections_overlap(left_section, right_section) {
-            count++
-        }
-
-
-    }
-
-    fmt.Println(count)
+func init() {
+	input = strings.TrimRight(input, "\n")
+	if len(input) == 0 {
+		log.Fatalln("error - input is empty")
+	}
 }
 
-func sections_overlap(left, right []int) bool {
-    for i:= 0; i < len(left); i++ {
-        if left[i] >= right[0] && left[i] <= right[1] {
-            return true
-        }
-        
-        if right[i] >= left[0] && right[i] <= left[1] {
-            return true
-        }
-        
-    }
-    return false
+func main() {
+	var part int
+
+	flag.IntVar(&part, "part", 1, "solve part 1 or part 2")
+	flag.Parse()
+
+	fmt.Println("running part", part)
+
+	if part == 1 {
+		fmt.Println("answer: ", part1(input))
+	}
+
+	if part == 2 {
+		fmt.Println("answer: ", part2(input))
+	}
 }
 
-func left_contains(left, section []int) bool {
-    if left[0] <= section[0] && left[1] >= section[1] {
-        return true
-    }
-    return false
+func part1(input string) int {
+	lines := parseInput(input)
+	count := 0
+
+	for _, line := range lines {
+		if doesLeftContain(line[:2], line[2:]) || doesLeftContain(line[2:], line[:2]) {
+			count++
+		}
+	}
+
+	return count
 }
 
-func left_is_contained(left, section []int) bool {
-    if left[0] >= section[0] && left[1] <= section[1] {
-        return true
-    }
-    return false
+func part2(input string) int {
+	lines := parseInput(input)
+	count := 0
+
+	for _, line := range lines {
+		if doesOverlap(line[:2], line[2:]) {
+			count++
+		}
+	}
+
+	return count
+}
+
+func doesOverlap(left, right []int) bool {
+	if left[0] > right[0] {
+		left, right = right, left
+	}
+	return left[1] >= right[0]
+}
+
+func doesLeftContain(left, right []int) bool {
+	return left[0] <= right[0] && left[1] >= right[1]
+}
+
+func parseInput(input string) (parsed [][]int) {
+	for _, line := range strings.Split(input, "\n") {
+		sections := strings.Split(line, ",")
+
+		leftSection := strings.Split(sections[0], "-")
+		rightSection := strings.Split(sections[1], "-")
+
+		parsed = append(parsed, []int{
+			parseInt(leftSection[0]),
+			parseInt(leftSection[1]),
+			parseInt(rightSection[0]),
+			parseInt(rightSection[1]),
+		})
+	}
+
+	return parsed
+}
+
+func parseInt(input string) int {
+	value, err := strconv.Atoi(input)
+
+	if err != nil {
+		log.Fatalln("error - cannot parse to int")
+	}
+
+	return value
 }

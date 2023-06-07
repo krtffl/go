@@ -43,7 +43,7 @@ func part1(input string) int {
 		rightHalf := line[len(line)/2:]
 
 		if len(rightHalf) != len(line)/2 {
-			log.Fatalln("length cannot be split in half", line)
+			log.Fatalln("error - length cannot be split in half", line)
 		}
 
 		for i := 0; i < len(line)/2; i++ {
